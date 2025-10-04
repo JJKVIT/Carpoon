@@ -1,0 +1,128 @@
+package main
+
+import (
+	"encoding/json"
+	"fmt"
+	"log"
+	"os"
+	"path/filepath"
+)
+
+type Project struct {
+	Path  string `json:"project_path"`
+	Title string `json:"project_name"`
+}
+
+type Config struct {
+	MaxLen      int    `json:"max_len"`
+	SelectColor string `json:"select_color"`
+}
+
+type jsonLoad struct {
+	Settings Config    `json:"settings"`
+	Projects []Project `json:"projects"`
+}
+
+func getPath() (string, error) {
+	exePath, err := os.Executable()
+	if err != nil {
+		log.Fatalf("error getting executable path: %v", err)
+		return "", err
+	}
+
+	exeDir := filepath.Dir(exePath)
+	jsonPath := filepath.Join(exeDir, "carpoon.json")
+
+	if _, err := os.Stat(jsonPath); os.IsNotExist(err) {
+		log.Printf("json file not found, creating default 'carpoon.json'\n")
+
+		defaultData := jsonLoad{
+			Settings: Config{
+				MaxLen:      10,
+				SelectColor: "#6C3BAA",
+			},
+			Projects: []Project{},
+		}
+
+		dObj, err := json.MarshalIndent(defaultData, "", "  ")
+		if err != nil {
+			log.Fatal("json object could not be created")
+			return "", err
+		}
+
+		if err := os.WriteFile(jsonPath, dObj, 0644); err != nil {
+			log.Fatal("cant create json, try manually creating the json file")
+			return "", err
+		}
+	}
+	return jsonPath, nil
+}
+
+func (data *jsonLoad) Init() error {
+	jsonPath, err := getPath()
+	if err != nil {
+		return err
+	}
+
+	byteVal, err := os.ReadFile(jsonPath)
+	if err != nil {
+		log.Fatalf("cant open file %s: %v", jsonPath, err)
+		return err
+	}
+
+	if err := json.Unmarshal(byteVal, data); err != nil {
+		log.Fatalf("cant unmarshal json data: %v", err)
+		return err
+	}
+
+	return nil
+}
+
+func (data *jsonLoad) setProjects() error {
+	jsonPath, err := getPath()
+	if err != nil {
+		return err
+	}
+
+	updatedJson, err := json.MarshalIndent(data, "", "  ")
+	if err != nil {
+		log.Fatal("cant marshal json")
+		return err
+	}
+
+	err = os.WriteFile(jsonPath, updatedJson, 0644)
+	if err != nil {
+		log.Fatal("cant write json")
+		return err
+	}
+	return nil
+}
+
+func (data *jsonLoad) addProject(path string, title string) error {
+	if len(data.Projects) >= data.Settings.MaxLen {
+		return fmt.Errorf("config max length reached (%d)", data.Settings.MaxLen)
+	}
+
+	newProject := Project{
+		Path:  path,
+		Title: title,
+	}
+
+	data.Projects = append(data.Projects, newProject)
+	return data.setProjects()
+}
+
+func (data *jsonLoad) removeProject(indexToRemove int) error {
+	if len(data.Projects) == 0 {
+		return fmt.Errorf("no projects to remove")
+	}
+
+	if indexToRemove < 0 || indexToRemove >= len(data.Projects) {
+		return fmt.Errorf("invalid index: %d", indexToRemove)
+	}
+
+	// This is the standard Go idiom for removing an element from a slice.
+	data.Projects = append(data.Projects[:indexToRemove], data.Projects[indexToRemove+1:]...)
+
+	return data.setProjects()
+}
