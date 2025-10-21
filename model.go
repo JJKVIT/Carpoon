@@ -15,6 +15,7 @@ const (
 	helpView
 	listView
 	settingsView
+	colorPicker
 )
 
 type updateMsg struct{}
@@ -125,11 +126,8 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.state = listView
 			case "C", "c":
 				m.state = settingsView
-			case "D", "d":
-				m.projects = removeUpdate(m)
-				if m.curr == len(m.projects) {
-					m.curr = m.curr - 1
-				}
+			case "p":
+				m.state = colorPicker
 			}
 		case listView:
 			switch key {
@@ -186,14 +184,9 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 					m.curr = m.curr - 1
 				}
 			}
+		case colorPicker:
+
 		}
 	}
 	return m, nil
 }
-
-// 	text := `
-// 	█████████████████████████████████████████
-//  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░     ██████░
-//                             ███████░
-//                     █████░
-//                ████░
