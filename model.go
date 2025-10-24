@@ -182,6 +182,13 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.state = listView
 			case "backspace":
 				m.state = entryView
+			case "J", "j", "down":
+				m.curr = (m.curr + 1) % 2
+			case "up", "K", "k":
+				m.curr = m.curr - 1
+				if m.curr < 0 {
+					m.curr = 1
+				}
 			case "D", "d":
 				m.projects = removeUpdate(m)
 				if m.curr == len(m.projects) {

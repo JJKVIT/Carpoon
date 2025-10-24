@@ -49,7 +49,7 @@ func (m model) View() string {
 				Width(m.width).
 				Align(lipgloss.Center)
 		faintStyle = lipgloss.NewStyle().
-				Foreground(lipgloss.Color("99")).
+				Foreground(lipgloss.Color("grey")).
 				Faint(true).
 				Align(lipgloss.Center)
 		GREEENstlye = lipgloss.NewStyle().
@@ -116,7 +116,6 @@ The select color in list view can be changed in config as well`
 		previewText := lipgloss.JoinVertical(
 			lipgloss.Center,
 			"Color Preview",
-			// color,
 		)
 
 		selectedBox := colorPreviewStyle.Render(previewText)
@@ -134,9 +133,19 @@ The select color in list view can be changed in config as well`
 			lightness = "> " + lightness
 		}
 
-		content = lipgloss.JoinVertical(lipgloss.Center, selectedBox, "\n", color, "\n", hue, "\n", saturation, "\n", lightness)
+		content = lipgloss.JoinVertical(
+			lipgloss.Center,
+			selectedBox+"\n",
+			color+"\n",
+			fmt.Sprintf("Hue:%d Saturation:%d Lightness:%d\n", int(m.config.H), int(m.config.S), int(m.config.L)),
+			hue+"\n",
+			saturation+"\n",
+			lightness+"\n",
+			faintStyle.Render("← → To increase or decrease the selected value\n"),
+			faintStyle.Render("↑ ↓ or scroll To change the selected value"),
+		)
 
-		controls = "Q/q (QUIT)  E/e(LIST)  H/h (HELP) ⌫ |Backsapce (HOME)"
+		controls = "Q/q (QUIT) E/e(LIST) H/h (HELP) ⌫ |Backsapce (HOME)"
 
 	}
 
