@@ -1,7 +1,10 @@
 {
   "settings": {
     "max_len": 10,
-    "select_color": "#6C3BAA"
+    "select_color": "#6C3BAA",
+    "h": 266,
+    "s": 48,
+    "l": 45
   },
   "projects": [
     {
@@ -11,6 +14,10 @@
     {
       "project_path": "C:\\Users\\josep",
       "project_name": "josep"
+    },
+    {
+      "project_path": "c:\\Work\\Programming\\software\\carpoon",
+      "project_name": "carpoon"
     }
   ]
 }

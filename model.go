@@ -123,10 +123,12 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			case "h", "H":
 				m.state = helpView
 			case "e", "E":
+				m.curr = 0
 				m.state = listView
 			case "C", "c":
 				m.state = settingsView
 			case "p":
+				m.curr = 0
 				m.state = colorPicker
 			}
 		case listView:
@@ -159,6 +161,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case helpView:
 			switch key {
 			case "e", "E":
+				m.curr = 0
 				m.state = listView
 			case "backspace":
 				m.state = entryView
@@ -175,6 +178,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			case "h", "H":
 				m.state = helpView
 			case "e", "E":
+				m.curr = 0
 				m.state = listView
 			case "backspace":
 				m.state = entryView
@@ -185,7 +189,55 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				}
 			}
 		case colorPicker:
-
+			switch key {
+			case "backspace":
+				m.state = entryView
+			case "enter":
+				m.config.SelectColor = HSLtoHEX(float64(m.config.H), float64(m.config.S), float64(m.config.L))
+			case "J", "j", "down":
+				m.curr = (m.curr + 1) % 3
+			case "up", "K", "k":
+				m.curr = m.curr - 1
+				if m.curr < 0 {
+					m.curr = 2
+				}
+			case "right":
+				switch m.curr {
+				case 0:
+					m.config.H++
+					if m.config.H > 360 {
+						m.config.H = 360
+					}
+				case 1:
+					m.config.S++
+					if m.config.S > 100 {
+						m.config.S = 100
+					}
+				case 2:
+					m.config.L++
+					if m.config.L > 100 {
+						m.config.L = 100
+					}
+				}
+			case "left":
+				switch m.curr {
+				case 0:
+					m.config.H--
+					if m.config.H < 0 {
+						m.config.H = 0
+					}
+				case 1:
+					m.config.S--
+					if m.config.S < 0 {
+						m.config.S = 0
+					}
+				case 2:
+					m.config.L--
+					if m.config.L < 0 {
+						m.config.L = 0
+					}
+				}
+			}
 		}
 	}
 	return m, nil

@@ -16,6 +16,9 @@ type Project struct {
 type Config struct {
 	MaxLen      int    `json:"max_len"`
 	SelectColor string `json:"select_color"`
+	H           int    `json:"h"`
+	S           int    `json:"s"`
+	L           int    `json:"l"`
 }
 
 type jsonLoad struct {
@@ -40,6 +43,9 @@ func getPath() (string, error) {
 			Settings: Config{
 				MaxLen:      10,
 				SelectColor: "#6C3BAA",
+				H:           266,
+				S:           48,
+				L:           45,
 			},
 			Projects: []Project{},
 		}
@@ -121,7 +127,6 @@ func (data *jsonLoad) removeProject(indexToRemove int) error {
 		return fmt.Errorf("invalid index: %d", indexToRemove)
 	}
 
-	// This is the standard Go idiom for removing an element from a slice.
 	data.Projects = append(data.Projects[:indexToRemove], data.Projects[indexToRemove+1:]...)
 
 	return data.setProjects()

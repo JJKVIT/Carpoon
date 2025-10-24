@@ -8,26 +8,21 @@ import (
 	"github.com/charmbracelet/lipgloss"
 )
 
-type hsl struct {
-	h int
-	s int
-	l int
-}
-
 func drawGradientBar(value string, m model) string {
 	var b string
-	for i := 0; i < 100; i++ {
+	for i := range 100 {
 		percent := float64(i) / float64(100-1)
 		hexColor := ""
-		if value == "h" {
+		switch value {
+		case "h":
 			temp := (percent * 360)
-			hexColor = HSLtoHEX(temp, 100, 50)
-		} else if value == "s" {
+			hexColor = HSLtoHEX(temp, float64(m.config.S), float64(m.config.L))
+		case "s":
 			temp := (percent * 100)
-			hexColor = HSLtoHEX(100, temp, 70)
-		} else if value == "l" {
+			hexColor = HSLtoHEX(float64(m.config.H), temp, float64(m.config.L))
+		case "l":
 			temp := percent * 100
-			hexColor = HSLtoHEX(100, 100, temp)
+			hexColor = HSLtoHEX(float64(m.config.H), float64(m.config.S), temp)
 		}
 
 		style := lipgloss.NewStyle().
@@ -35,9 +30,7 @@ func drawGradientBar(value string, m model) string {
 
 		b += (style.Render(" "))
 	}
-	border := lipgloss.NewStyle().
-		Border(lipgloss.NormalBorder())
-	b = (border.Render(b))
+
 	return b
 }
 
@@ -115,14 +108,15 @@ The select color in list view can be changed in config as well`
 		controls = "Q/q (QUIT)  E/e(LIST)  H/h (HELP) ⌫ |Backsapce (HOME)"
 
 	case colorPicker:
+		color := HSLtoHEX(float64(m.config.H), float64(m.config.S), float64(m.config.L))
 		colorPreviewStyle := lipgloss.NewStyle().
 			Padding(2, 5).
-			Background(lipgloss.Color(m.config.SelectColor))
+			Background(lipgloss.Color(color))
 
 		previewText := lipgloss.JoinVertical(
 			lipgloss.Center,
 			"Color Preview",
-			m.config.SelectColor,
+			// color,
 		)
 
 		selectedBox := colorPreviewStyle.Render(previewText)
@@ -131,9 +125,19 @@ The select color in list view can be changed in config as well`
 		saturation := drawGradientBar("s", m)
 		lightness := drawGradientBar("l", m)
 
-		content = lipgloss.JoinVertical(lipgloss.Center, selectedBox, "\n", hue, "\n", saturation, "\n", lightness)
+		switch m.curr {
+		case 0:
+			hue = "> " + hue
+		case 1:
+			saturation = "> " + saturation
+		case 2:
+			lightness = "> " + lightness
+		}
+
+		content = lipgloss.JoinVertical(lipgloss.Center, selectedBox, "\n", color, "\n", hue, "\n", saturation, "\n", lightness)
 
 		controls = "Q/q (QUIT)  E/e(LIST)  H/h (HELP) ⌫ |Backsapce (HOME)"
+
 	}
 
 	if m.search != "" {
