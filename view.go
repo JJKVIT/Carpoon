@@ -16,13 +16,13 @@ func drawGradientBar(value string, m model) string {
 		switch value {
 		case "h":
 			temp := (percent * 360)
-			hexColor = HSLtoHEX(temp, float64(m.config.S), float64(m.config.L))
+			hexColor = HSLtoHEX(temp, m.config.S, m.config.L)
 		case "s":
 			temp := (percent * 100)
-			hexColor = HSLtoHEX(float64(m.config.H), temp, float64(m.config.L))
+			hexColor = HSLtoHEX(m.config.H, temp, m.config.L)
 		case "l":
 			temp := percent * 100
-			hexColor = HSLtoHEX(float64(m.config.H), float64(m.config.S), temp)
+			hexColor = HSLtoHEX(m.config.H, m.config.S, temp)
 		}
 
 		style := lipgloss.NewStyle().
@@ -108,7 +108,7 @@ The select color in list view can be changed in config as well`
 		controls = "Q/q (QUIT)  E/e(LIST)  H/h (HELP) ⌫ |Backsapce (HOME)"
 
 	case colorPicker:
-		color := HSLtoHEX(float64(m.config.H), float64(m.config.S), float64(m.config.L))
+		color := m.config.SelectColor
 		colorPreviewStyle := lipgloss.NewStyle().
 			Padding(2, 5).
 			Background(lipgloss.Color(color))

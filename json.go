@@ -14,11 +14,11 @@ type Project struct {
 }
 
 type Config struct {
-	MaxLen      int    `json:"max_len"`
-	SelectColor string `json:"select_color"`
-	H           int    `json:"h"`
-	S           int    `json:"s"`
-	L           int    `json:"l"`
+	MaxLen      int     `json:"max_len"`
+	SelectColor string  `json:"select_color"`
+	H           float64 `json:"h"`
+	S           float64 `json:"s"`
+	L           float64 `json:"l"`
 }
 
 type jsonLoad struct {
@@ -84,7 +84,15 @@ func (data *jsonLoad) Init() error {
 	return nil
 }
 
-func (data *jsonLoad) setProjects() error {
+func (data *jsonLoad) changeColor(hex string, H float64, S float64, L float64) error {
+	data.Settings.SelectColor = hex
+	data.Settings.H = H
+	data.Settings.S = S
+	data.Settings.L = L
+	return data.setData()
+}
+
+func (data *jsonLoad) setData() error {
 	jsonPath, err := getPath()
 	if err != nil {
 		return err
@@ -115,7 +123,7 @@ func (data *jsonLoad) addProject(path string, title string) error {
 	}
 
 	data.Projects = append(data.Projects, newProject)
-	return data.setProjects()
+	return data.setData()
 }
 
 func (data *jsonLoad) removeProject(indexToRemove int) error {
@@ -129,5 +137,5 @@ func (data *jsonLoad) removeProject(indexToRemove int) error {
 
 	data.Projects = append(data.Projects[:indexToRemove], data.Projects[indexToRemove+1:]...)
 
-	return data.setProjects()
+	return data.setData()
 }

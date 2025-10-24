@@ -193,7 +193,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			case "backspace":
 				m.state = entryView
 			case "enter":
-				m.config.SelectColor = HSLtoHEX(float64(m.config.H), float64(m.config.S), float64(m.config.L))
+				m.dataobj.changeColor(m.config.SelectColor, m.config.H, m.config.S, m.config.L)
 			case "J", "j", "down":
 				m.curr = (m.curr + 1) % 3
 			case "up", "K", "k":
@@ -202,6 +202,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 					m.curr = 2
 				}
 			case "right":
+				m.config.SelectColor = HSLtoHEX(m.config.H, m.config.S, m.config.L)
 				switch m.curr {
 				case 0:
 					m.config.H++
@@ -220,6 +221,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 					}
 				}
 			case "left":
+				m.config.SelectColor = HSLtoHEX(m.config.H, m.config.S, m.config.L)
 				switch m.curr {
 				case 0:
 					m.config.H--
