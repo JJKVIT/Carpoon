@@ -38,3 +38,10 @@ Run the application from your terminal:
 
 ```bash
 ./carpoon
+```
+or if you have added it globally
+```bash
+carpoon
+```
+
+Other commands can be seen in the help menu in the carpoon tui
