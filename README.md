@@ -4,7 +4,7 @@ A project directory manager for your command line.
 
 > *"dont ask me who need this"* - [me](https://github.com/JJKVIT)
 
-Designed to help you navigate and manage your project directories from the terminal, Carpoon is built in Go and utilizes a TUI (bubbletea).
+Designed to help you navigate and manage your project directories from the terminal, Carpoon is built in Go and utilizes a TUI (bubbletea). Exactly like harpoon for neovim (I mean I copied them just made it a cli just so i could learn go)  
 
 ## 🚀 Features
 
